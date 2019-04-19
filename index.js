@@ -7,6 +7,7 @@ var ElkContact = require('./lib/ElkContact.js');
 var ElkMotion = require('./lib/ElkMotion.js');
 var ElkSmoke = require('./lib/ElkSmoke.js');
 var ElkOutput = require('./lib/ElkOutput.js');
+var ElkLight = require('./lib/ElkLight.js');
 var ElkTask = require('./lib/ElkTask.js');
 var ElkGarageDoor = require('./lib/ElkGarageDoor.js');
 
@@ -112,6 +113,19 @@ ElkPlatform.prototype.accessories = function (callback) {
                             var output = new ElkOutput(Homebridge, this.log, this.elk, td.id, td.description);
                             this.outputs[td.id] = output;
                             this._elkAccessories.push(output);
+                        }
+                        return this.elk.requestTextDescriptionAll(7); // Lighting
+                    })
+                    .then((lightText) => {
+                        this.log.info('***lightText***');
+                        this.log.info(lightText);
+                        this.log.info('***lightText:END***');
+                        this.lights = {};
+                        for (var i = 0; i < lightText.length; i++) {
+                            var td = lightText[i];
+                            var light = new ElkLight(Homebridge, this.log, this.elk, td.id, td.description);
+                            this.lights[td.id] = light;
+                            this._elkAccessories.push(light);
                         }
                     })
                     .then(() => {
